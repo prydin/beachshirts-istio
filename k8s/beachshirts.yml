@@ -1,0 +1,232 @@
+##################################################################################################
+# Shopping services
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopping
+  labels:
+    app: shopping
+
+spec:
+  type: LoadBalancer
+  ports:
+    - targetPort: 50050
+      port: 50050
+      protocol: TCP
+      name: http
+      
+  selector:
+      app: shopping
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: shopping
+  labels:
+    app: istio-beachshirts
+    env: prod
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: shopping
+      labels:
+        app: shopping
+        env: prod
+
+    spec:
+      containers:
+        - name: shopping
+          image: gcr.io/wavefront-dt-training/shopping
+          env:
+            - name: PROXYHOST
+              value: "wavefront-proxy.default.svc.cluster.local"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50050
+---
+##################################################################################################
+# Styling service
+##################################################################################################
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: styling
+  labels:
+    app: styling
+
+spec:
+  ports:
+    - targetPort: 50051
+      port: 50051
+      name: http
+
+  selector:
+      app: styling
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: styling
+
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: styling
+      labels:
+        app: styling
+        env: prod
+
+    spec:
+      containers:
+        - name: styling
+          image: gcr.io/wavefront-dt-training/styling
+          env:
+            - name: PROXYHOST
+              value: "wavefront-proxy.default.svc.cluster.local"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50051
+---
+
+##################################################################################################
+# Delivery service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: delivery
+  labels:
+    app: delivery
+
+spec:
+  ports:
+    - targetPort: 50054
+      port: 50054
+      name: http
+
+  selector:
+    app: delivery
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: delivery
+
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: delivery
+      labels:
+        app: delivery
+        env: prod
+
+    spec:
+      containers:
+        - name: delivery
+          image: gcr.io/wavefront-dt-training/delivery
+          env:
+            - name: PROXYHOST
+              value: "wavefront-proxy.default.svc.cluster.local"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50054
+---
+
+##################################################################################################
+# Packaging service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: packaging
+  labels:
+    app: packaging
+
+spec:
+  ports:
+    - targetPort: 50053
+      port: 50053
+      name: grpc
+
+  selector:
+    app: packaging
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: packaging
+
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: packaging
+      labels:
+        app: packaging
+        env: prod
+
+    spec:
+      containers:
+        - name: packaging
+          image: gcr.io/wavefront-dt-training/packaging
+          env:
+            - name: PRICE_CACHE_SIZE
+              value: "100"
+            - name: PROXYHOST
+              value: "wavefront-proxy.default.svc.cluster.local"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50053
+
+---
+
+##################################################################################################
+# Printing service
+##################################################################################################
+apiVersion: v1
+kind: Service
+metadata:
+  name: printing
+  labels:
+    app: printing
+
+spec:
+  ports:
+    - targetPort: 50052
+      port: 50052
+      name: grpc
+
+  selector:
+    app: printing
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: printing
+
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: printing
+      labels:
+        app: printing
+        env: prod
+
+    spec:
+      containers:
+        - name: printing
+          image: gcr.io/wavefront-dt-training/printing
+          env:
+            - name: PRICE_CACHE_SIZE
+              value: "100"
+            - name: PROXYHOST
+              value: "wavefront-proxy.default.svc.cluster.local"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 50052

@@ -1,0 +1,7 @@
+# Template of Reporting via Wavefront Proxy
+reportingMechanism: proxy
+proxyHost: wavefront-proxy
+proxyMetricsPort: 2878
+proxyDistributionsPort: 2878
+proxyTracingPort: 30000
+reportTraces: true
